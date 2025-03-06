@@ -1,0 +1,5 @@
+fastapi
+whisper-cpp
+openai
+pydub
+ffmpeg-python
