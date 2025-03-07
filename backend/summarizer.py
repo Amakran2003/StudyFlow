@@ -44,7 +44,7 @@ def generate_bullet_summary(transcript: str) -> str:
 
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4o-mini",
+            model="gpt-3.5-turbo",
             messages=[
                 {
                     "role": "system",
@@ -90,7 +90,7 @@ def generate_detailed_summary(transcript: str) -> str:
 
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4o-mini",
+            model="gpt-3.5-turbo",
             messages=[
                 {
                     "role": "system",

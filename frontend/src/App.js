@@ -62,27 +62,21 @@ function App() {
         </button>
       </div>
 
-      {error && (
-        <p style={{ color: 'red', marginBottom: '1rem' }}>
-          {error}
-        </p>
-      )}
+      {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
 
       {/* Transcription Preview */}
       {transcription && (
         <div style={{ marginBottom: '2rem' }}>
           <h2 style={{ fontSize: '1.4rem', marginBottom: '0.5rem' }}>Transcription</h2>
-          <div
-            style={{
+          <div style={{
               maxHeight: '300px',
               overflowY: 'auto',
               backgroundColor: '#f9f9f9',
               padding: '1rem',
               border: '1px solid #ddd',
               borderRadius: '4px'
-            }}
-          >
-            <pre style={{ margin: 0 }}>{transcription}</pre>
+            }}>
+            <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{transcription}</pre>
           </div>
         </div>
       )}
@@ -91,17 +85,15 @@ function App() {
       {petitResume && (
         <div style={{ marginBottom: '2rem' }}>
           <h2 style={{ fontSize: '1.4rem', marginBottom: '0.5rem' }}>Small Summary (Key Points)</h2>
-          <div
-            style={{
+          <div style={{
               maxHeight: '200px',
               overflowY: 'auto',
               backgroundColor: '#f9f9f9',
               padding: '1rem',
               border: '1px solid #ddd',
               borderRadius: '4px'
-            }}
-          >
-            <pre style={{ margin: 0 }}>{petitResume}</pre>
+            }}>
+            <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{petitResume}</pre>
           </div>
         </div>
       )}
@@ -109,18 +101,16 @@ function App() {
       {/* Gros Résumé (Détaillé) */}
       {grosResume && (
         <div style={{ marginBottom: '2rem' }}>
-          <h2 style={{ fontSize: '1.4rem', marginBottom: '0.5rem' }}>Big Summary (Detailled)</h2>
-          <div
-            style={{
+          <h2 style={{ fontSize: '1.4rem', marginBottom: '0.5rem' }}>Big Summary (Detailed)</h2>
+          <div style={{
               maxHeight: '500px',
               overflowY: 'auto',
               backgroundColor: '#f9f9f9',
               padding: '1rem',
               border: '1px solid #ddd',
               borderRadius: '4px'
-            }}
-          >
-            <pre style={{ margin: 0 }}>{grosResume}</pre>
+            }}>
+            <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{grosResume}</pre>
           </div>
         </div>
       )}

@@ -57,7 +57,7 @@ backend/models/large-v3-turbo.bin
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/StudyFlow.git
+git clone https://github.com/Amakran2003/StudyFlow
 cd StudyFlow
 ```
 
