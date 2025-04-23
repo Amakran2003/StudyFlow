@@ -1,6 +1,13 @@
 import os
 import openai
 from langdetect import detect
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Initialize the OpenAI client
+client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def detect_language(text: str) -> str:
     """
@@ -19,14 +26,10 @@ def generate_bullet_summary(transcript: str) -> str:
     openai_api_key = os.getenv("OPENAI_API_KEY")
     if not openai_api_key:
         raise Exception("Clé API OpenAI non définie dans les variables d'environnement.")
-    openai.api_key = openai_api_key
-
+    
     # Détecter la langue
     lang_code = detect_language(transcript)
-    # On peut mapper lang_code vers une langue complète
-    # par exemple si lang_code = "en" => "anglais", si "fr" => "français"
-    # mais le plus simple est de réutiliser le code tel quel dans le prompt
-
+    
     prompt = (
         "You are an assistant specialized in transcription and factual summarization.\n"
         "First, detect the language of the provided text. Respond using the same language.\n\n"
@@ -43,7 +46,7 @@ def generate_bullet_summary(transcript: str) -> str:
     )
 
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {
@@ -71,8 +74,7 @@ def generate_detailed_summary(transcript: str) -> str:
     openai_api_key = os.getenv("OPENAI_API_KEY")
     if not openai_api_key:
         raise Exception("Clé API OpenAI non définie dans les variables d'environnement.")
-    openai.api_key = openai_api_key
-
+    
     # Détecter la langue
     lang_code = detect_language(transcript)
 
@@ -89,7 +91,7 @@ def generate_detailed_summary(transcript: str) -> str:
     )
 
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {

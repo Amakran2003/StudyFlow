@@ -4,3 +4,4 @@ openai
 ffmpeg-python
 python-dotenv
 langdetect
+python-multipart
