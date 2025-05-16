@@ -17,11 +17,13 @@ def transcribe_audio(file_path: str) -> str:
     Returns:
         str: The transcription text.
     """
-    # Define the absolute path to the Whisper.cpp binary.
-    binary_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "whisper.cpp", "build", "bin", "whisper-cli"))
+    # Define the absolute path to the Whisper.cpp binary
+    binary_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 
+                                              "whisper.cpp", "build", "bin", "whisper-cli"))
     
-    # Define the absolute path to the model file.
-    model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "models", "large-v3-turbo.bin"))
+    # Define the absolute path to the model file
+    model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 
+                                             "models", "large-v3-turbo.bin"))
     
     # Get absolute path to the audio file
     abs_file_path = os.path.abspath(file_path)
@@ -42,12 +44,24 @@ def transcribe_audio(file_path: str) -> str:
         logger.error(error)
         raise FileNotFoundError(error)
     
-    # Auto-detect language mode instead of hardcoding to French
-    command = [binary_path, "-m", model_path, "-f", abs_file_path]
+    # Command with correct parameters for whisper-cli
+    command = [
+        binary_path,
+        "-m", model_path,
+        "-f", abs_file_path,
+        "-l", "auto",          # language
+        "-otxt",              # output text file
+        "-pp",               # print progress
+        "--output-json",     # also output JSON for more info
+        "--print-colors",    # for better debug output
+        "-osrt"              # output SRT format with timestamps
+    ]
     
     logger.info(f"Running command: {' '.join(command)}")
+    logger.info(f"File size: {os.path.getsize(abs_file_path)} bytes")
     
     try:
+        # Run the command and capture output
         result = subprocess.run(
             command,
             stdout=subprocess.PIPE,
@@ -55,9 +69,48 @@ def transcribe_audio(file_path: str) -> str:
             text=True,
             check=True
         )
-        transcription = result.stdout.strip()
+        
+        # Log the outputs
+        if result.stdout:
+            logger.info(f"Whisper stdout: {result.stdout[:200]}...")
+        if result.stderr:
+            logger.warning(f"Whisper stderr: {result.stderr}")
+            
+        # Try to read from the output text file first
+        txt_output = abs_file_path + ".txt"
+        if os.path.exists(txt_output):
+            with open(txt_output, 'r', encoding='utf-8') as f:
+                transcription = f.read().strip()
+            os.remove(txt_output)  # Clean up
+        else:
+            # If no output file, use stdout
+            transcription = result.stdout.strip()
+            
+        if not transcription:
+            raise Exception("No transcription output generated")
+            
+        logger.info(f"Transcription successful, length: {len(transcription)} characters")
         return transcription
+        
     except subprocess.CalledProcessError as e:
-        error_message = f"Transcription failed: Command: {' '.join(command)}\nExit code: {e.returncode}\nStdout: {e.stdout}\nStderr: {e.stderr}"
+        error_message = (
+            f"Transcription failed:\n"
+            f"Command: {' '.join(command)}\n"
+            f"Exit code: {e.returncode}\n"
+            f"Stdout: {e.stdout}\n"
+            f"Stderr: {e.stderr}"
+        )
         logger.error(error_message)
         raise Exception(error_message)
+    except Exception as e:
+        error_message = f"Unexpected error during transcription: {str(e)}"
+        logger.error(error_message)
+        raise Exception(error_message)
+    finally:
+        # Clean up any remaining output files
+        txt_output = abs_file_path + ".txt"
+        if os.path.exists(txt_output):
+            try:
+                os.remove(txt_output)
+            except Exception as e:
+                logger.warning(f"Failed to remove output file: {str(e)}")
