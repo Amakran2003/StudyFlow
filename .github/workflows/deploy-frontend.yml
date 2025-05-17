@@ -3,7 +3,7 @@ name: Deploy Frontend to GitHub Pages
 on:
   push:
     branches:
-      - v2
+      - main
     paths:
       - 'frontend/**'
 
@@ -48,3 +48,4 @@ jobs:
           publish_dir: ./frontend/dist
           cname: ${{ steps.deployment.outputs.cname }}
           force_orphan: true # This ensures we don't keep the history of the gh-pages branch
+          enable_jekyll: false # Skip Jekyll build process
