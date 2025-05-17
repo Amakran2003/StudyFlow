@@ -1,9 +1,0 @@
-exclude:
-  - backend/whisper.cpp/
-  - node_modules/
-  - '*.lock'
-  - package-lock.json
-  - frontend/node_modules/
-  - frontend/dist/
-  - "**/__pycache__"
-  - "**/*.pyc"
