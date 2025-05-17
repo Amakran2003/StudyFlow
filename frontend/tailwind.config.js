@@ -1,6 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ["class"],
+  future: {
+    removeDeprecatedGapUtilities: true,
+    purgeLayersByDefault: true,
+  },
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",

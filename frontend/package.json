@@ -7,9 +7,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:github": "GITHUB_PAGES=true vite build",
-    "predeploy": "npm run build:github",
-    "deploy": "gh-pages -d dist",
+    "predeploy": "npm run build && cp public/404.html dist/ && touch dist/.nojekyll",
+    "deploy": "gh-pages --dist dist --branch gh-pages --message 'Deploy React app to GitHub Pages' --add",
     "lint": "eslint .",
     "preview": "vite preview"
   },
