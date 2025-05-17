@@ -1,0 +1,15 @@
+{
+    "name": "studyflow-monorepo",
+    "version": "1.0.0",
+    "scripts": {
+      "setup:dirs": "mkdir -p audio backend/models",
+      "build:whisper": "cd backend/whisper.cpp && cmake -B build && cmake --build build",
+      "start:backend": "cd backend && uvicorn main:app --host 0.0.0.0 --port 8000 --reload",
+      "start:frontend": "cd frontend && npm run dev",
+      "dev": "npm run setup:dirs && concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+      "setup": "npm install && cd frontend && npm install"
+    },
+    "devDependencies": {
+      "concurrently": "^7.0.0"
+    }
+  }

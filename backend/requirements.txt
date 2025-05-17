@@ -1,5 +1,7 @@
 fastapi
-whisper-cpp
+uvicorn
 openai
-pydub
 ffmpeg-python
+python-dotenv
+langdetect
+python-multipart
