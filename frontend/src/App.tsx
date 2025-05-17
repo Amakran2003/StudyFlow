@@ -8,10 +8,10 @@ import './styles/background.css'
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<RootLayout />}>
+      <Route path="/StudyFlow" element={<RootLayout />}>
         <Route index element={<HomePage />} />
-        <Route path="/transcribe" element={<TranscribePage />} />
-        <Route path="/about" element={<AboutPage />} />
+        <Route path="transcribe" element={<TranscribePage />} />
+        <Route path="about" element={<AboutPage />} />
       </Route>
     </Routes>
   )
