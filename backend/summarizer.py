@@ -18,14 +18,18 @@ def detect_language(text: str) -> str:
     except:
         return "en"  # fallback
 
-def generate_bullet_summary(transcript: str) -> str:
+def generate_bullet_summary(transcript: str, api_key: str = None) -> str:
     """
     Génère un petit résumé (en puces) à partir du transcript,
     en respectant la langue détectée du texte.
     """
-    openai_api_key = os.getenv("OPENAI_API_KEY")
+    openai_api_key = api_key or os.getenv("OPENAI_API_KEY")
     if not openai_api_key:
         raise Exception("Clé API OpenAI non définie dans les variables d'environnement.")
+        
+    # Update the client's API key
+    global client
+    client = openai.OpenAI(api_key=openai_api_key)
     
     # Détecter la langue
     lang_code = detect_language(transcript)
@@ -66,14 +70,18 @@ def generate_bullet_summary(transcript: str) -> str:
     except Exception as e:
         raise Exception(f"Échec du résumé en puces : {str(e)}")
 
-def generate_detailed_summary(transcript: str) -> str:
+def generate_detailed_summary(transcript: str, api_key: str = None) -> str:
     """
     Génère un gros résumé détaillé (en paragraphes) à partir du transcript,
     en respectant la langue détectée du texte.
     """
-    openai_api_key = os.getenv("OPENAI_API_KEY")
+    openai_api_key = api_key or os.getenv("OPENAI_API_KEY")
     if not openai_api_key:
         raise Exception("Clé API OpenAI non définie dans les variables d'environnement.")
+        
+    # Update the client's API key
+    global client
+    client = openai.OpenAI(api_key=openai_api_key)
     
     # Détecter la langue
     lang_code = detect_language(transcript)

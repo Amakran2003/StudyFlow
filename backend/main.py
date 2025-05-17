@@ -163,8 +163,8 @@ async def transcribe(
             
             # Exécuter les appels de résumé en parallèle
             logger.info("Generating summaries...")
-            bullet_future = asyncio.to_thread(generate_bullet_summary, cleaned_transcript)
-            detailed_future = asyncio.to_thread(generate_detailed_summary, cleaned_transcript)
+            bullet_future = asyncio.to_thread(generate_bullet_summary, cleaned_transcript, api_key)
+            detailed_future = asyncio.to_thread(generate_detailed_summary, cleaned_transcript, api_key)
             petit_resume, gros_resume = await asyncio.gather(bullet_future, detailed_future)
             logger.info("Summaries generated")
             
