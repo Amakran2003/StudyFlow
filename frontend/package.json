@@ -6,11 +6,12 @@
   "homepage": "https://amakran2003.github.io/StudyFlow",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
+    "build:github": "GITHUB_PAGES=true vite build",
+    "predeploy": "npm run build:github",
+    "deploy": "gh-pages -d dist",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist --dotfiles true"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.13",

@@ -52,3 +52,15 @@ export default tseslint.config({
   },
 })
 ```
+
+## Deployment
+
+The frontend is automatically deployed to GitHub Pages whenever changes are pushed to the main branch. You can also manually deploy by running:
+
+```bash
+npm run deploy
+```
+
+This will build the project and deploy it to the gh-pages branch. The site will be available at https://amakran2003.github.io/StudyFlow
+
+Note: The application uses HashRouter for client-side routing to work properly with GitHub Pages.
