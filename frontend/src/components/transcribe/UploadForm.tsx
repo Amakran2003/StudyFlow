@@ -72,11 +72,10 @@ export function UploadForm({ onTranscriptionComplete }: UploadFormProps) {
     resetProgress();
 
     const clientId = `client_${Date.now()}`;
-    let ws: WebSocket | null = null;
 
     try {
       // First establish WebSocket connection
-      ws = await setupWebSocket(clientId);
+      await setupWebSocket(clientId);
       
       const formData = new FormData();
       formData.append('file', selectedFile);

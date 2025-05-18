@@ -1,10 +1,15 @@
 import os
+import re
+import json
+import uuid
+import shutil
 import asyncio
 import logging
 import signal
+import datetime
 import subprocess
-from typing import Optional
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException, WebSocket
+from typing import Dict, Optional
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
 # Import relative modules
@@ -24,6 +29,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Global variables
+active_connections = {}
+shutdown_event = asyncio.Event()
+
+class TranscribeTask:
+    """Class to store transcription state data"""
+    def __init__(self):
+        self.audio_duration = None
+
+# Initialize transcribe task
+transcribe_task = TranscribeTask()
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, 
