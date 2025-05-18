@@ -1,6 +1,6 @@
 import * as React from "react"
 import { motion } from "framer-motion"
-import { cn } from "@/lib/utils"
+import { cn } from "../../lib/utils.ts"
 
 export interface FileInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {

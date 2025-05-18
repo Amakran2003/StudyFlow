@@ -4,7 +4,7 @@ import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/StudyFlow/',
+  base: '/',
   plugins: [react()],
   build: {
     outDir: 'dist',
@@ -16,19 +16,28 @@ export default defineConfig({
     }
   },
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
+    alias: [
+      { find: '@', replacement: path.resolve(__dirname, './src') }
+    ],
+    extensions: ['.js', '.jsx', '.ts', '.tsx']
   },
   server: {
+    host: '0.0.0.0',
+    port: 5173,
+    strictPort: true,
+    cors: true,
     proxy: {
       '/api': {
         target: 'http://localhost:8000',
         changeOrigin: true,
+        secure: false,
+        ws: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
-    host: true,
-    open: true,
+    watch: {
+      usePolling: true
+    },
+    open: true
   }
 })

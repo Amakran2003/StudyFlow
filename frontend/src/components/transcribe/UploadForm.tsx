@@ -1,11 +1,14 @@
-import { useState } from 'react'
-import { FileInput } from '../ui/file-input'
-import { Label } from '../ui/label'
-import { Input } from '../ui/input'
-import { Switch } from '../ui/switch'
-import { Button } from '../ui/button'
-import { motion } from 'framer-motion'
-import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '../ui/card'
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { FileInput } from '../ui/file-input';
+import { Label } from '../ui/label';
+import { Switch } from '../ui/switch';
+import { Button } from '../ui/button';
+import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '../ui/card';
+import { ApiKeyInput } from './ApiKeyInput';
+import { TranscriptionProgress } from './TranscriptionProgress';
+import { useWebSocket } from '../../hooks/useWebSocket';
+import { useProgressTracking } from '../../hooks/useProgressTracking';
 
 interface UploadFormProps {
   onTranscriptionComplete: (data: {
@@ -16,63 +19,99 @@ interface UploadFormProps {
 }
 
 export function UploadForm({ onTranscriptionComplete }: UploadFormProps) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [loading, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<string>('')
-  const [enableSummary, setEnableSummary] = useState<boolean>(false)
-  const [apiKey, setApiKey] = useState<string>('')
-  const [showApiInput, setShowApiInput] = useState<boolean>(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
+  const [enableSummary, setEnableSummary] = useState<boolean>(false);
+  const [apiKey, setApiKey] = useState<string>('');
+  const [showApiInput, setShowApiInput] = useState<boolean>(false);
+  const [audioDuration, setAudioDuration] = useState<number | null>(null);
+
+  const { 
+    progress, 
+    estimatedTimeRemaining, 
+    updateProgress, 
+    resetProgress 
+  } = useProgressTracking();
+
+  const { 
+    setupWebSocket, 
+    closeWebSocket 
+  } = useWebSocket({
+    onDurationUpdate: setAudioDuration,
+    onProgress: updateProgress
+  });
+
+  // Clean up when loading state changes
+  useEffect(() => {
+    if (!loading) {
+      resetProgress();
+    }
+  }, [loading]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files?.[0]) {
-      setSelectedFile(event.target.files[0])
-      setError('')
+      setSelectedFile(event.target.files[0]);
+      setError('');
+      resetProgress();
     }
-  }
+  };
 
   const handleUpload = async () => {
     if (!selectedFile) {
-      setError('Please select an audio file.')
-      return
+      setError('Please select an audio file.');
+      return;
     }
     if (enableSummary && !apiKey) {
-      setError('Please enter an OpenAI API key for summarization.')
-      return
+      setError('Please enter an OpenAI API key for summarization.');
+      return;
     }
 
-    setError('')
-    setLoading(true)
+    setError('');
+    setLoading(true);
+    resetProgress();
 
-    const formData = new FormData()
-    formData.append('file', selectedFile)
-    formData.append('enable_summary', String(enableSummary))
-    if (enableSummary) {
-      formData.append('api_key', apiKey)
-    }
+    const clientId = `client_${Date.now()}`;
+    let ws: WebSocket | null = null;
 
     try {
+      // First establish WebSocket connection
+      ws = await setupWebSocket(clientId);
+      
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('enable_summary', String(enableSummary));
+      formData.append('client_id', clientId);
+      if (enableSummary) {
+        formData.append('api_key', apiKey);
+      }
+
       const response = await fetch('http://localhost:8000/transcribe/', {
         method: 'POST',
         body: formData,
-      })
+      });
       
       if (!response.ok) {
-        throw new Error('Failed to process the audio file.')
+        throw new Error('Failed to process the audio file.');
       }
 
-      const data = await response.json()
+      const data = await response.json();
       onTranscriptionComplete({
-        transcription: data.original_transcript,
-        petitResume: data.petit_resume,
-        grosResume: data.gros_resume,
-      })
+        transcription: data.transcription,
+        petitResume: data.petitResume,
+        grosResume: data.grosResume
+      });
+
+      // Wait a bit before closing the WebSocket to ensure all progress updates are received
+      await new Promise(resolve => setTimeout(resolve, 1000));
     } catch (err) {
-      console.error(err)
-      setError('Failed to process the audio file.')
+      console.error(err);
+      setError(err instanceof Error ? err.message : 'Failed to process the audio file.');
     } finally {
-      setLoading(false)
+      setLoading(false);
+      closeWebSocket();
     }
-  }
+  };
 
   return (
     <Card className="max-w-2xl mx-auto backdrop-blur-sm bg-card/50 border-border/50">
@@ -95,9 +134,9 @@ export function UploadForm({ onTranscriptionComplete }: UploadFormProps) {
                 id="enable-summary"
                 checked={enableSummary}
                 onCheckedChange={(checked: boolean) => {
-                  setEnableSummary(checked)
+                  setEnableSummary(checked);
                   if (checked) {
-                    setShowApiInput(true)
+                    setShowApiInput(true);
                   }
                 }}
               />
@@ -108,27 +147,18 @@ export function UploadForm({ onTranscriptionComplete }: UploadFormProps) {
           </div>
 
           {showApiInput && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-2"
-            >
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="api-key">OpenAI API Key</Label>
-                <Input
-                  id="api-key"
-                  type="password"
-                  value={apiKey}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setApiKey(e.target.value)}
-                  placeholder="sk-..."
-                />
-                <p className="text-xs text-muted-foreground">
-                  Your API key is only used for summarization and never stored
-                </p>
-              </div>
-            </motion.div>
+            <ApiKeyInput
+              apiKey={apiKey}
+              onApiKeyChange={setApiKey}
+            />
+          )}
+
+          {loading && (
+            <TranscriptionProgress
+              progress={progress}
+              audioDuration={audioDuration}
+              estimatedTimeRemaining={estimatedTimeRemaining}
+            />
           )}
         </div>
       </CardContent>
@@ -153,5 +183,5 @@ export function UploadForm({ onTranscriptionComplete }: UploadFormProps) {
         </Button>
       </CardFooter>
     </Card>
-  )
+  );
 }

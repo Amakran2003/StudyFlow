@@ -3,13 +3,12 @@
 ## Table of Contents
 1. [Overview](#overview)
 2. [Features](#features)
-3. [Deployment](#deployment)
-4. [Getting Started](#getting-started)
-5. [Model Setup](#model-setup)
-6. [Installation](#installation)
-7. [Usage](#usage)
-8. [Contributing](#contributing)
-9. [License](#license)
+3. [Getting Started](#getting-started)
+4. [Model Setup](#model-setup)
+5. [Installation](#installation)
+6. [Usage](#usage)
+7. [Contributing](#contributing)
+8. [License](#license)
 
 ---
 
@@ -23,37 +22,6 @@
 - **Modern UI** (React.js & Tailwind CSS for seamless UX)  
 - **Secure & Private** (GDPR-compliant, encrypted data handling)  
 - **Open-Source & Community-Driven** (Built by students, for students)
-
-## Deployment
-
-The frontend is deployed to GitHub Pages and can be accessed at: https://amakran2003.github.io/StudyFlow
-
-### To Deploy
-
-There are two ways to deploy updates:
-
-1. **Automatic Deployment**
-   - Push your changes to the main branch
-   - GitHub Actions will automatically build and deploy to GitHub Pages
-
-2. **Manual Deployment**
-   ```bash
-   cd frontend
-   npm run deploy
-   ```
-
-This will:
-1. Build your project with the correct base URL for GitHub Pages
-2. Deploy it to the gh-pages branch
-3. Make it available at https://amakran2003.github.io/StudyFlow
-
-### Note about Routing
-
-The application uses HashRouter for client-side routing to work properly with GitHub Pages. This means URLs will look like:
-
-- Home: https://amakran2003.github.io/StudyFlow/#/
-- Transcribe: https://amakran2003.github.io/StudyFlow/#/transcribe
-- About: https://amakran2003.github.io/StudyFlow/#/about
 
 ---
 
@@ -102,10 +70,10 @@ make dev
 This will:
 - Install all dependencies
 - Start the FastAPI backend on [http://localhost:8000](http://localhost:8000)  
-- Start the React frontend on [http://localhost:3000](http://localhost:3000)
+- Start the React frontend on [http://localhost:5173](http://localhost:5173)
 
 ### 2. Uploading Audio & Summarizing
-Open your browser at [http://localhost:3000](http://localhost:3000):
+Open your browser at [http://localhost:5173](http://localhost:5173):
 1. Select an audio file (WAV, MP3, etc.).
 2. Click **“Upload & Transcribe”**.
 3. StudyFlow will process the file with Whisper.cpp and summarize it via GPT-based LLM (if configured).

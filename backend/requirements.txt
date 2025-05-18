@@ -1,7 +1,8 @@
 fastapi
-uvicorn
+uvicorn[standard]
 openai
 ffmpeg-python
 python-dotenv
 langdetect
 python-multipart
+websockets
