@@ -1,9 +1,4 @@
-import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Button } from '../components/ui/button'
-import { UploadForm } from '../components/transcribe/UploadForm'
-import { TranscriptionResult } from '../components/transcribe/TranscriptionResult'
-import { SummaryResult } from '../components/transcribe/SummaryResult'
 
 interface TranscriptionData {
   transcription: string
@@ -12,129 +7,36 @@ interface TranscriptionData {
 }
 
 export function TranscribePage() {
-  const [transcriptionData, setTranscriptionData] = useState<TranscriptionData | null>(null)
-  const [isTranscriptionExpanded, setIsTranscriptionExpanded] = useState(false)
-
-  const handleDownload = (content: string, filename: string) => {
-    const blob = new Blob([content], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = filename
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  }
-
-  const handleJsonDownload = () => {
-    if (!transcriptionData) return
-    const content = {
-      transcription: transcriptionData.transcription,
-      ...(transcriptionData.petitResume && { keyPoints: transcriptionData.petitResume }),
-      ...(transcriptionData.grosResume && { detailedSummary: transcriptionData.grosResume })
-    }
-    const blob = new Blob([JSON.stringify(content, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'transcription.json'
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  }
-
-  const handleMarkdownDownload = () => {
-    if (!transcriptionData) return
-    const mdContent = `# Transcription\n\n${transcriptionData.transcription}\n\n${
-      transcriptionData.petitResume ? `\n## Key Points\n\n${transcriptionData.petitResume}` : ''
-    }${
-      transcriptionData.grosResume ? `\n## Detailed Summary\n\n${transcriptionData.grosResume}` : ''
-    }`
-    handleDownload(mdContent, 'transcription.md')
-  }
-
   return (
-    <div id="upload-section" className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-      <UploadForm onTranscriptionComplete={setTranscriptionData} />
-
-      {transcriptionData?.transcription && (
-        <TranscriptionResult
-          transcription={transcriptionData.transcription}
-          isExpanded={isTranscriptionExpanded}
-          onToggleExpand={() => setIsTranscriptionExpanded(!isTranscriptionExpanded)}
-          onCopy={() => navigator.clipboard.writeText(transcriptionData.transcription)}
-          onDownload={(format) => {
-            switch (format) {
-              case 'txt':
-                handleDownload(transcriptionData.transcription, 'transcription.txt')
-                break
-              case 'json':
-                handleJsonDownload()
-                break
-              case 'md':
-                handleMarkdownDownload()
-                break
-            }
-          }}
-        />
-      )}
-
-      {transcriptionData?.petitResume && (
-        <SummaryResult
-          title="Key Points"
-          description="Essential takeaways from your audio"
-          content={transcriptionData.petitResume}
-          onCopy={() => {
-            if (transcriptionData.petitResume) {
-              navigator.clipboard.writeText(transcriptionData.petitResume)
-            }
-          }}
-          onDownload={() => {
-            if (transcriptionData.petitResume) {
-              handleDownload(transcriptionData.petitResume, 'key-points.txt')
-            }
-          }}
-        />
-      )}
-
-      {transcriptionData?.grosResume && (
-        <SummaryResult
-          title="Detailed Summary"
-          description="Comprehensive overview of the content"
-          content={transcriptionData.grosResume}
-          onCopy={() => {
-            if (transcriptionData.grosResume) {
-              navigator.clipboard.writeText(transcriptionData.grosResume)
-            }
-          }}
-          onDownload={() => {
-            if (transcriptionData.grosResume) {
-              handleDownload(transcriptionData.grosResume, 'detailed-summary.txt')
-            }
-          }}
-        />
-      )}
-
-      {!transcriptionData?.petitResume && transcriptionData?.transcription && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="mt-4 text-center"
-        >
-          <Button
-            variant="outline"
-            onClick={() => {
-              // Handle enabling summarization
-              // This would need to be implemented in the UploadForm component
-            }}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      id="upload-section" 
+      className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24"
+    >
+      <div className="max-w-3xl mx-auto text-center bg-card rounded-lg shadow-lg p-8 backdrop-blur-sm border border-border/50">
+        <h2 className="text-3xl font-bold mb-6">Transcription Feature</h2>
+        <div className="text-lg text-muted-foreground mb-8">
+          <p className="mb-4">This feature is still in development and will be available soon!</p>
+          <p>To try it now:</p>
+          <ul className="list-disc list-inside text-left mx-auto max-w-xl mt-4 space-y-2">
+            <li>Clone the repository locally</li>
+            <li>Set up the backend following the instructions in the README</li>
+            <li>Run both frontend and backend servers locally</li>
+          </ul>
+        </div>
+        <div className="mt-8">
+          <a 
+            href="https://github.com/amakran2003/StudyFlow" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background bg-primary text-primary-foreground hover:bg-primary/90 h-10 py-2 px-4"
           >
-            Add API Key for Summarization
-          </Button>
-        </motion.div>
-      )}
-    </div>
+            View on GitHub
+          </a>
+        </div>
+      </div>
+    </motion.div>
   )
 }
