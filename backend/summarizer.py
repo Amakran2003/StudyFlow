@@ -18,7 +18,7 @@ def detect_language(text: str) -> str:
     except:
         return "en"  # fallback
 
-def generate_bullet_summary(transcript: str, api_key: str = None) -> str:
+async def generate_bullet_summary(transcript: str, api_key: str = None) -> str:
     """
     Génère un petit résumé (en puces) à partir du transcript,
     en respectant la langue détectée du texte.
@@ -70,7 +70,7 @@ def generate_bullet_summary(transcript: str, api_key: str = None) -> str:
     except Exception as e:
         raise Exception(f"Échec du résumé en puces : {str(e)}")
 
-def generate_detailed_summary(transcript: str, api_key: str = None) -> str:
+async def generate_detailed_summary(transcript: str, api_key: str = None) -> str:
     """
     Génère un gros résumé détaillé (en paragraphes) à partir du transcript,
     en respectant la langue détectée du texte.

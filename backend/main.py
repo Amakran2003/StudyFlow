@@ -251,7 +251,7 @@ async def transcribe(
             logger.info("Generated bullet summary")
             final_result["petitResume"] = bullet_summary
             
-            detailed_summary = await generate_detailed_summary(plain_text, bullet_summary, api_key)
+            detailed_summary = await generate_detailed_summary(plain_text, api_key)
             logger.info("Generated detailed summary")
             final_result["grosResume"] = detailed_summary
 
