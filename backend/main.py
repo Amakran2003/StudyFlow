@@ -13,7 +13,7 @@ from fastapi import FastAPI, UploadFile, File, Form, HTTPException, WebSocket, W
 from fastapi.middleware.cors import CORSMiddleware
 
 # Import relative modules
-from audio_processor import transcribe_audio
+from audio_processor import transcribe_audio, get_audio_duration
 from summarizer import generate_bullet_summary, generate_detailed_summary
 from websocket_manager import WebSocketManager
 from file_handler import FileHandler
@@ -209,6 +209,18 @@ async def transcribe(
         
         try:
             # Run transcription with progress updates
+            audio_duration = get_audio_duration(audio_path)
+            transcribe_task.audio_duration = audio_duration
+            
+            # Send audio duration update to the client
+            if client_id in active_connections:
+                await active_connections[client_id].send_json({
+                    "type": "connected",
+                    "audioInfo": {
+                        "duration": audio_duration
+                    }
+                })
+            
             transcription = transcribe_audio(audio_path, progress_callback=sync_progress_callback)
         finally:
             # Clean up the monitoring task

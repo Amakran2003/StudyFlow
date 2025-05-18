@@ -61,8 +61,8 @@ def transcribe_audio(file_path: str, progress_callback: Optional[Callable[[int],
             raise FileNotFoundError(error)
 
     # Get audio duration for progress estimation
-    transcribe_task.audio_duration = get_audio_duration(file_path)
-    if transcribe_task.audio_duration <= 0:
+    audio_duration = get_audio_duration(file_path)
+    if audio_duration <= 0:
         logger.warning("Could not determine audio duration, progress updates may be inaccurate")
 
     # Create queues for inter-thread communication    

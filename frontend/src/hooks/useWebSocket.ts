@@ -27,9 +27,9 @@ export const useWebSocket = ({ onDurationUpdate, onProgress }: WebSocketHookProp
     };
   }, []);
 
-  const setupWebSocket = (clientId: string): Promise<WebSocket> => {
+  const setupWebSocket = (clientId: string): Promise<void> => {
     return new Promise((resolve, reject) => {
-      const ws = new WebSocket(`ws://localhost:8000/ws/${clientId}`);
+      const webSocket = new WebSocket(`ws://localhost:8000/ws/${clientId}`);
       
       // Set up ping interval
       let pingInterval: NodeJS.Timeout;
@@ -37,25 +37,25 @@ export const useWebSocket = ({ onDurationUpdate, onProgress }: WebSocketHookProp
       // Set a timeout for the connection
       const timeoutId = setTimeout(() => {
         clearInterval(pingInterval);
-        ws.close();
+        webSocket.close();
         reject(new Error('WebSocket connection timeout'));
       }, 10000);
 
-      ws.onopen = () => {
+      webSocket.onopen = () => {
         console.log('WebSocket connected');
         clearTimeout(timeoutId);
         
         // Set up periodic ping at a lower frequency
         pingInterval = setInterval(() => {
-          if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type: 'ping' }));
+          if (webSocket.readyState === WebSocket.OPEN) {
+            webSocket.send(JSON.stringify({ type: 'ping' }));
           }
         }, 30000);
         
-        resolve(ws);
+        resolve();
       };
 
-      ws.onmessage = (event) => {
+      webSocket.onmessage = (event: MessageEvent) => {
         try {
           const data = JSON.parse(event.data) as WebSocketMessage;
           console.log('Raw WebSocket message:', event.data);
@@ -83,7 +83,7 @@ export const useWebSocket = ({ onDurationUpdate, onProgress }: WebSocketHookProp
         }
       };
 
-      ws.onerror = (error) => {
+      webSocket.onerror = (error: Event) => {
         try {
           console.error('WebSocket error:', error);
           clearTimeout(timeoutId);
@@ -93,11 +93,11 @@ export const useWebSocket = ({ onDurationUpdate, onProgress }: WebSocketHookProp
         }
       };
 
-      ws.onclose = (event) => {
+      webSocket.onclose = (event: CloseEvent) => {
         try {
           console.log('WebSocket disconnected:', event.code, event.reason);
           clearInterval(pingInterval);
-          if (wsRef.current === ws) {
+          if (wsRef.current === webSocket) {
             wsRef.current = null;
           }
         } catch (err) {
@@ -105,7 +105,7 @@ export const useWebSocket = ({ onDurationUpdate, onProgress }: WebSocketHookProp
         }
       };
 
-      wsRef.current = ws;
+      wsRef.current = webSocket;
     });
   };
 
